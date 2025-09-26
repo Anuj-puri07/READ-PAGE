@@ -14,15 +14,50 @@ const User = sequelize.define(
       type: DataTypes.STRING(100),
       allowNull: false,
     },
+    username: {
+      type: DataTypes.STRING(50),
+      allowNull: false,
+      unique: true,
+    },
     email: {
       type: DataTypes.STRING(150),
       allowNull: false,
-      // Removed unique constraint to avoid "Too many keys" error
+      unique: true,
       validate: { isEmail: true },
+    },
+    phoneNumber: {
+      type: DataTypes.STRING(20),
+      allowNull: false,
+      unique: true,
     },
     passwordHash: {
       type: DataTypes.STRING,
       allowNull: false,
+    },
+    address: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    profilePhoto: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    isEmailVerified: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    },
+    emailVerificationToken: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    },
+    passwordResetToken: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    },
+    passwordResetExpires: {
+      type: DataTypes.DATE,
+      allowNull: true,
     },
     role: {
       type: DataTypes.ENUM('admin', 'customer'),

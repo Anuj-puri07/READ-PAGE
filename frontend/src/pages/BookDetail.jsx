@@ -139,7 +139,7 @@ export default function BookDetail() {
               <p className="text-lg text-gray-600 mb-6">by <span className="font-medium">{book.author}</span></p>
               
               <div className="mb-6">
-                <p className="text-3xl font-bold text-indigo-600">${parseFloat(book.price).toFixed(2)}</p>
+                <p className="text-3xl font-bold text-indigo-600">NPR {parseFloat(book.price).toFixed(2)}</p>
                 <p className="text-sm text-gray-500 mt-1">
                   {book.stock > 0 ? (
                     <span className="text-green-600">In Stock ({book.stock} available)</span>

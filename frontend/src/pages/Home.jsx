@@ -144,7 +144,7 @@ export default function Home() {
                         <h3 className="font-semibold text-lg group-hover:text-indigo-600 transition-colors duration-200">{book.title}</h3>
                         <p className="text-gray-600">{book.author}</p>
                         <div className="flex items-center gap-2 mt-2">
-                          <p className="font-medium text-lg">${parseFloat(book.price).toFixed(2)}</p>
+                          <p className="font-medium text-lg">NPR {parseFloat(book.price).toFixed(2)}</p>
                           {book.category && (
                             <span className="text-xs bg-indigo-100 text-indigo-800 px-2 py-1 rounded-full">{book.category}</span>
                           )}

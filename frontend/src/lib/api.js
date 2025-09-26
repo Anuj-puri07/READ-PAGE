@@ -20,6 +20,42 @@ async function request(path, options = {}) {
 export const api = {
   register: (payload) => request('/api/auth/register', { method: 'POST', body: JSON.stringify(payload) }),
   login: (payload) => request('/api/auth/login', { method: 'POST', body: JSON.stringify(payload) }),
+  verifyEmail: (token) => request(`/api/auth/verify-email?token=${token}`),
+  forgotPassword: (payload) => request('/api/auth/forgot-password', { method: 'POST', body: JSON.stringify(payload) }),
+  resetPassword: (payload) => request('/api/auth/reset-password', { method: 'POST', body: JSON.stringify(payload) }),
+  getProfile: () => request('/api/auth/profile', {
+    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+  }),
+  updateProfile: (payload) => request('/api/auth/profile', { 
+    method: 'PUT', 
+    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` },
+    body: JSON.stringify(payload) 
+  }),
+  changePassword: (payload) => request('/api/auth/change-password', { 
+    method: 'PUT', 
+    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` },
+    body: JSON.stringify(payload) 
+  }),
+  uploadProfilePhoto: (formData) => {
+    return fetch(`${BASE_URL}/api/auth/profile/photo`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      },
+      body: formData
+    }).then(async (res) => {
+      const text = await res.text()
+      const data = text ? JSON.parse(text) : null
+      if (!res.ok) {
+        const message = data?.message || data?.errors?.[0]?.msg || 'Request failed'
+        const error = new Error(message)
+        error.status = res.status
+        error.data = data
+        throw error
+      }
+      return data
+    })
+  },
   
   // Book operations
   getBooks: () => request('/api/books'),
@@ -119,6 +155,19 @@ export const api = {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify(statuses)
+  }),
+  
+  // Payment operations
+  verifyKhaltiPayment: (payload) => request('/api/payments/khalti/verify', {
+    method: 'POST',
+    headers: { 
+      'Authorization': `Bearer ${localStorage.getItem('token')}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(payload)
+  }),
+  getPaymentStatus: (orderId) => request(`/api/payments/${orderId}/status`, {
+    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
   }),
 
   // Customer operations (admin only)

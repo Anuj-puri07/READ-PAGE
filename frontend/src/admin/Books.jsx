@@ -311,7 +311,7 @@ export default function Books() {
                           </span>
                         </td>
                         <td className="px-6 py-4">
-                          <div className="text-sm font-medium text-gray-900">${parseFloat(book.price).toFixed(2)}</div>
+                          <div className="text-sm font-medium text-gray-900">NPR {parseFloat(book.price).toFixed(2)}</div>
                         </td>
                         <td className="px-6 py-4">
                           <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
@@ -411,7 +411,7 @@ export default function Books() {
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Price ($) *</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Price (NPR) *</label>
                   <input 
                     type="number" 
                     name="price" 

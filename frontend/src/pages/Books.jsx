@@ -175,7 +175,7 @@ export default function Books() {
                     <p className="text-gray-600 text-sm mb-3">by <span className="font-medium">{book.author}</span></p>
                     
                     <div className="flex justify-between items-center mt-4">
-                      <p className="text-lg font-bold text-indigo-600">${parseFloat(book.price).toFixed(2)}</p>
+                      <p className="text-lg font-bold text-indigo-600">NPR {parseFloat(book.price).toFixed(2)}</p>
                       
                       <div className="flex space-x-2">
                         <Link 

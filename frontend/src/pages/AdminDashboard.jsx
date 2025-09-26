@@ -215,7 +215,7 @@ export default function AdminDashboard() {
                 </div>
                 <div className="ml-4">
                   <p className="text-yellow-100 text-sm font-medium">Total Revenue</p>
-                  <p className="text-2xl font-bold text-white">${stats.totalRevenue.toFixed(2)}</p>
+                  <p className="text-2xl font-bold text-white">NPR {stats.totalRevenue.toFixed(2)}</p>
                 </div>
               </div>
             </div>
@@ -319,7 +319,7 @@ export default function AdminDashboard() {
                           {order.Book?.title || 'N/A'}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                          ${order.totalAmount.toFixed(2)}
+                          NPR {order.totalAmount.toFixed(2)}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 

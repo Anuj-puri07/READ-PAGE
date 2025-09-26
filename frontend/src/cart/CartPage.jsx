@@ -4,6 +4,7 @@ import { useState, useMemo, useEffect } from "react"
 import { api } from "../lib/api"
 import { getToken } from "../lib/auth"
 import { Link } from "react-router-dom"
+import { initiateKhaltiPayment } from "../lib/khaltiService"
 
 // Pure UI cart page using local state and mock data. No backend calls.
 export default function CartPage() {
@@ -67,7 +68,7 @@ export default function CartPage() {
 
   // Checkout modal state
   const [showCheckout, setShowCheckout] = useState(false)
-  const [paymentMethod, setPaymentMethod] = useState("online") // 'online' | 'cod'
+  const [paymentMethod, setPaymentMethod] = useState("online") // 'online' | 'cod' | 'khalti'
 
   const updateQty = async (id, qty) => {
     if (qty < 1) return
@@ -170,7 +171,7 @@ export default function CartPage() {
       <div className="flex-1 min-w-0">
         <h3 className="font-medium text-lg text-gray-900 truncate">{item.title}</h3>
         <p className="text-sm text-gray-600">{item.author}</p>
-        <p className="text-lg font-semibold text-indigo-700 mt-1">${item.price.toFixed(2)}</p>
+        <p className="text-lg font-semibold text-indigo-700 mt-1">NPR {item.price.toFixed(2)}</p>
       </div>
       
       <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto mt-4 sm:mt-0">
@@ -298,7 +299,7 @@ export default function CartPage() {
                 <div className="pt-4 border-t border-gray-100">
                   <div className="flex items-center justify-between text-lg">
                     <span className="font-medium text-gray-900">Subtotal</span>
-                    <span className="font-bold text-indigo-700">${selectedTotal.toFixed(2)}</span>
+                    <span className="font-bold text-indigo-700">NPR {selectedTotal.toFixed(2)}</span>
                   </div>
                   <p className="text-xs text-gray-500 mt-1">Shipping calculated at checkout</p>
                 </div>
@@ -369,6 +370,25 @@ export default function CartPage() {
                   <input
                     type="radio"
                     name="payment"
+                    checked={paymentMethod === "khalti"}
+                    onChange={() => setPaymentMethod("khalti")}
+                    className="h-5 w-5 text-indigo-600 focus:ring-indigo-500 border-gray-300"
+                  />
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-purple-600" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <span className="font-medium text-gray-900">Khalti Payment</span>
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">Pay securely with Khalti digital wallet</p>
+                  </div>
+                </label>
+
+                <label className="flex items-center gap-3 p-4 border border-gray-200 rounded-lg cursor-pointer hover:border-indigo-300 transition-colors">
+                  <input
+                    type="radio"
+                    name="payment"
                     checked={paymentMethod === "online"}
                     onChange={() => setPaymentMethod("online")}
                     className="h-5 w-5 text-indigo-600 focus:ring-indigo-500 border-gray-300"
@@ -408,15 +428,15 @@ export default function CartPage() {
             <div className="bg-gray-50 p-4 rounded-lg mb-6">
               <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
                 <span>Subtotal</span>
-                <span>${selectedTotal.toFixed(2)}</span>
+                <span>NPR {selectedTotal.toFixed(2)}</span>
               </div>
               <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
                 <span>Shipping</span>
-                <span>$0.00</span>
+                <span>NPR 0.00</span>
               </div>
               <div className="flex items-center justify-between text-base font-medium text-gray-900 pt-2 border-t border-gray-200 mt-2">
                 <span>Total ({selectedQty} items)</span>
-                <span>${selectedTotal.toFixed(2)}</span>
+                <span>NPR {selectedTotal.toFixed(2)}</span>
               </div>
             </div>
 
@@ -435,12 +455,41 @@ export default function CartPage() {
                     const selectedIds = Array.from(selected)
                     
                     // Create orders from selected cart items
-                    await api.createOrderFromCart(selectedIds, paymentMethod)
+                    const orders = await api.createOrderFromCart(selectedIds, paymentMethod === "khalti" ? "khalti" : paymentMethod)
                     
                     // Close modal and show success message
                     setShowCheckout(false)
                     
-                    if (paymentMethod === "online") {
+                    if (paymentMethod === "khalti") {
+                      // For Khalti, we need to initiate the payment widget
+                      if (orders && orders.length > 0) {
+                        // Calculate total amount from all orders
+                        const totalAmount = orders.reduce((sum, order) => sum + order.totalAmount, 0);
+                        
+                        // Use the first order ID as reference (or combine them if needed)
+                        const orderId = orders[0].id;
+                        
+                        // Initiate Khalti payment
+                        initiateKhaltiPayment(totalAmount, orderId, (response) => {
+                          // This will be called after successful payment verification
+                          alert("Payment successful! Your order has been confirmed.");
+                          
+                          // Refresh cart after successful payment
+                          api.getCart().then(data => {
+                            setItems(data.map((row) => ({
+                              id: row.id,
+                              bookId: row.Book.id,
+                              title: row.Book.title,
+                              author: row.Book.author,
+                              price: parseFloat(row.Book.price),
+                              coverImage: row.Book.coverImage,
+                              quantity: row.quantity,
+                            })))
+                            setSelected(new Set())
+                          });
+                        });
+                      }
+                    } else if (paymentMethod === "online") {
                       alert("Order placed successfully! Proceeding to online payment.")
                     } else {
                       alert("Order placed successfully! Cash on delivery selected.")

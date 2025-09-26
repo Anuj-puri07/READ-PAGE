@@ -30,12 +30,15 @@ export default function Register() {
                 e.preventDefault()
                 const form = e.currentTarget
                 const name = form.name.value.trim()
+                const username = form.username.value.trim()
                 const email = form.email.value.trim()
+                const phoneNumber = form.phoneNumber.value.trim()
                 const password = form.password.value
                 setError("")
                 setLoading(true)
                 try {
-                  await api.register({ name, email, password })
+                  const response = await api.register({ name, username, email, phoneNumber, password })
+                  alert(response.message || "Registration successful! Please check your email to verify your account.")
                   navigate('/login')
                 } catch (err) {
                   setError(err.message)
@@ -65,6 +68,26 @@ export default function Register() {
                   </div>
                   
                   <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2" htmlFor="username">Username</label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                      </div>
+                      <input 
+                        id="username" 
+                        name="username" 
+                        type="text" 
+                        required
+                        className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors duration-200 disabled:bg-gray-50 disabled:cursor-not-allowed" 
+                        placeholder="Choose a username"
+                        disabled={loading}
+                      />
+                    </div>
+                  </div>
+                  
+                  <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-2" htmlFor="email">Email address</label>
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -79,6 +102,26 @@ export default function Register() {
                         required
                         className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors duration-200 disabled:bg-gray-50 disabled:cursor-not-allowed" 
                         placeholder="Enter your email"
+                        disabled={loading}
+                      />
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2" htmlFor="phoneNumber">Phone Number</label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                        </svg>
+                      </div>
+                      <input 
+                        id="phoneNumber" 
+                        name="phoneNumber" 
+                        type="tel" 
+                        required
+                        className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors duration-200 disabled:bg-gray-50 disabled:cursor-not-allowed" 
+                        placeholder="Enter your phone number"
                         disabled={loading}
                       />
                     </div>

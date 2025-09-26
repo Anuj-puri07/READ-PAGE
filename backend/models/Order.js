@@ -21,7 +21,7 @@ const Order = sequelize.define(
       validate: { min: 0 },
     },
     paymentMethod: {
-      type: DataTypes.ENUM("cod", "online"),
+      type: DataTypes.ENUM("cod", "online", "khalti"),
       allowNull: false,
     },
     paymentStatus: {
@@ -33,6 +33,10 @@ const Order = sequelize.define(
       type: DataTypes.ENUM("pending", "processing", "delivered", "cancelled"),
       allowNull: false,
       defaultValue: "pending",
+    },
+    paymentDetails: {
+      type: DataTypes.TEXT,
+      allowNull: true,
     },
     UserId: {
       type: DataTypes.INTEGER,

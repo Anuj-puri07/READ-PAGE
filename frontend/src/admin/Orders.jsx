@@ -154,7 +154,7 @@ export default function Orders() {
                         <div className="text-sm text-gray-900">{order.quantity}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">${order.totalAmount.toFixed(2)}</div>
+                        <div className="text-sm font-medium text-gray-900">NPR {order.totalAmount.toFixed(2)}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${

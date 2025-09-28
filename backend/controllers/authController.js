@@ -363,6 +363,9 @@ exports.resetPassword = async (req, res) => {
 exports.updateProfile = async (req, res) => {
   try {
     const userId = req.user.id || req.user.sub
+    console.log("userId:", userId)
+    console.log("Request body:", req.body)
+
     const { name, username, phoneNumber, address } = req.body || {}
     
     const user = await User.findByPk(userId)

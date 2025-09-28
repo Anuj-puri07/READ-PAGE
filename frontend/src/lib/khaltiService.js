@@ -1,8 +1,12 @@
 import KhaltiCheckout from "khalti-checkout-web";
 import { khaltiConfig } from "./khaltiConfig";
-import api from "./api";
+import { api } from "./api";
 
+// This function is now deprecated in favor of using our backend API
+// It's kept for reference but should not be used directly
 export const initiateKhaltiPayment = (amount, orderId, onSuccess) => {
+  console.warn("Direct Khalti payment initiation is deprecated. Use api.initiateKhaltiPayment instead.");
+  
   // Configuration with dynamic amount and order details
   const config = {
     ...khaltiConfig,
@@ -20,7 +24,7 @@ export const initiateKhaltiPayment = (amount, orderId, onSuccess) => {
             orderId: orderId
           });
           
-          if (response.success) {
+          if (response.status === "COMPLETED") {
             // Call the success callback if provided
             if (onSuccess && typeof onSuccess === 'function') {
               onSuccess(response);
@@ -45,4 +49,15 @@ export const initiateKhaltiPayment = (amount, orderId, onSuccess) => {
   return checkout;
 };
 
-export default { initiateKhaltiPayment };
+// Helper function to check payment status
+export const checkPaymentStatus = async (orderId) => {
+  try {
+    const response = await api.getPaymentStatus(orderId);
+    return response;
+  } catch (error) {
+    console.error("Error checking payment status:", error);
+    throw error;
+  }
+};
+
+export default { initiateKhaltiPayment, checkPaymentStatus };

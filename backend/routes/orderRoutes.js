@@ -8,7 +8,6 @@ router.use(verifyToken)
 
 // User routes
 router.get('/', order.list)
-router.post('/', order.create)
 router.post('/from-cart', order.createFromCart)
 
 // Admin routes

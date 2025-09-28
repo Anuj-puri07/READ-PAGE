@@ -58,9 +58,9 @@ export default function Footer() {
           <div>
             <h3 className="font-semibold text-gray-900 mb-4">Contact</h3>
             <ul className="space-y-2">
-              <li className="text-gray-600">Email: contact@readpage.com</li>
-              <li className="text-gray-600">Phone: +1 (555) 123-4567</li>
-              <li className="text-gray-600">Address: 123 Book Street, Reading, CA 94103</li>
+              <li className="text-gray-600">Email: Readmore@gmail.com</li>
+              <li className="text-gray-600">Phone: +977 9812312312</li>
+              <li className="text-gray-600">Address: 123 Book Street, Reading, Itahari-19</li>
             </ul>
           </div>
         </div>

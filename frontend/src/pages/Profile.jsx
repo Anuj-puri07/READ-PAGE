@@ -75,14 +75,40 @@ export default function Profile() {
   const handleSaveProfile = async () => {
     try {
       setSaving(true)
-      const response = await api.updateProfile(profileData)
+      
+      // Validate required fields
+      if (!profileData.name || !profileData.username) {
+        alert('Name and username are required')
+        setSaving(false)
+        return
+      }
+      
+      // Ensure we're sending the correct data structure
+      const payload = {
+        name: profileData.name,
+        username: profileData.username,
+        phoneNumber: profileData.phoneNumber,
+        address: profileData.address
+      }
+      
+      console.log('Updating profile with:', payload)
+      const response = await api.updateProfile(payload)
+      
+      if (!response || !response.user) {
+        throw new Error('Invalid response from server')
+      }
+      
       const updatedUser = { ...user, ...response.user }
       setUser(updatedUser)
+      
       // Persist to localStorage so Navbar/Profile reflect changes
       try {
         const token = getToken()
         setAuth(token, updatedUser)
-      } catch {}
+      } catch (e) {
+        console.error('Failed to update local auth:', e)
+      }
+      
       // Re-fetch latest profile from server to ensure we display authoritative data
       try {
         const fresh = await api.getProfile()
@@ -92,11 +118,15 @@ export default function Profile() {
           const token = getToken()
           setAuth(token, merged)
         }
-      } catch {}
+      } catch (e) {
+        console.error('Failed to refresh profile:', e)
+      }
+      
       setShowEditProfile(false)
       alert('Profile updated successfully!')
     } catch (err) {
-      alert('Error updating profile: ' + err.message)
+      console.error('Profile update error:', err)
+      alert('Error updating profile: ' + (err.message || 'Unknown error'))
     } finally {
       setSaving(false)
     }

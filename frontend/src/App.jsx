@@ -15,6 +15,8 @@ import AdminBooks from './admin/Books'
 import AdminCustomers from './admin/Customers'
 import AdminOrders from './admin/Orders'
 import CartPage from './cart/CartPage'
+import PaymentSuccess from './components/PaymentSuccess'
+import PaymentFailure from './components/PaymentFailure'
 
 function App() {
   return (
@@ -22,6 +24,8 @@ function App() {
       <Routes>
         <Route element={<PublicLayout />}>
           <Route path="/" element={<Home />} />
+          <Route path="/payment/success" element={<PaymentSuccess />} />
+          <Route path="/payment/failure" element={<PaymentFailure />} />
           <Route path="/books" element={<Books />} />
           <Route path="/books/:id" element={<BookDetail />} />
           <Route path="/cart" element={<CartPage />} />

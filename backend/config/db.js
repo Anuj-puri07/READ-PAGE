@@ -12,9 +12,9 @@ const sequelize = new Sequelize(
     dialect: "mysql",
     port: process.env.DB_PORT,
   }
-)
+);
 
-;(async () => {
+(async () => {
   try {
     await sequelize.authenticate()
     console.log("Database connected successfully")

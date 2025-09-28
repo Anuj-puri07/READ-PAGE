@@ -26,11 +26,16 @@ export const api = {
   getProfile: () => request('/api/auth/profile', {
     headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
   }),
-  updateProfile: (payload) => request('/api/auth/profile', { 
-    method: 'PUT', 
-    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` },
-    body: JSON.stringify(payload) 
+  updateProfile: (payload) =>
+  request('/api/auth/profile', {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${localStorage.getItem('token')}`
+    },
+    body: JSON.stringify(payload)
   }),
+
   changePassword: (payload) => request('/api/auth/change-password', { 
     method: 'PUT', 
     headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` },
@@ -135,6 +140,7 @@ export const api = {
     method: 'DELETE',
     headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
   }),
+
   
   // Order operations
   createOrderFromCart: (cartItemIds, paymentMethod) => request('/api/orders/from-cart', {

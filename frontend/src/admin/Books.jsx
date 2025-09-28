@@ -136,6 +136,7 @@ export default function Books() {
       
       // Also refresh from server to ensure data consistency
       fetchBooks(true)
+      window.location.reload()
       
     } catch (err) {
       console.error('Submit error:', err)

@@ -4,7 +4,6 @@ import { useState, useMemo, useEffect } from "react"
 import { api } from "../lib/api"
 import { getToken } from "../lib/auth"
 import { Link } from "react-router-dom"
-import { initiateKhaltiPayment } from "../lib/khaltiService"
 
 // Pure UI cart page using local state and mock data. No backend calls.
 export default function CartPage() {
@@ -55,10 +54,6 @@ export default function CartPage() {
     load()
   }, [])
 
-  const total = useMemo(() => {
-    return items.reduce((sum, it) => sum + it.price * it.quantity, 0)
-  }, [items])
-
   const selectedItems = useMemo(() => items.filter((it) => selected.has(it.id)), [items, selected])
   const selectedQty = useMemo(() => selectedItems.reduce((sum, it) => sum + it.quantity, 0), [selectedItems])
   const selectedTotal = useMemo(
@@ -68,7 +63,7 @@ export default function CartPage() {
 
   // Checkout modal state
   const [showCheckout, setShowCheckout] = useState(false)
-  const [paymentMethod, setPaymentMethod] = useState("online") // 'online' | 'cod' | 'khalti'
+  const [paymentMethod, setPaymentMethod] = useState("cod")
 
   const updateQty = async (id, qty) => {
     if (qty < 1) return
@@ -384,30 +379,11 @@ export default function CartPage() {
                     <p className="text-xs text-gray-500 mt-1">Pay securely with Khalti digital wallet</p>
                   </div>
                 </label>
-
                 <label className="flex items-center gap-3 p-4 border border-gray-200 rounded-lg cursor-pointer hover:border-indigo-300 transition-colors">
                   <input
                     type="radio"
                     name="payment"
-                    checked={paymentMethod === "online"}
-                    onChange={() => setPaymentMethod("online")}
-                    className="h-5 w-5 text-indigo-600 focus:ring-indigo-500 border-gray-300"
-                  />
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                      </svg>
-                      <span className="font-medium text-gray-900">Online payment</span>
-                    </div>
-                    <p className="text-xs text-gray-500 mt-1">Pay securely with credit/debit card</p>
-                  </div>
-                </label>
-                
-                <label className="flex items-center gap-3 p-4 border border-gray-200 rounded-lg cursor-pointer hover:border-indigo-300 transition-colors">
-                  <input
-                    type="radio"
-                    name="payment"
+                    
                     checked={paymentMethod === "cod"}
                     onChange={() => setPaymentMethod("cod")}
                     className="h-5 w-5 text-indigo-600 focus:ring-indigo-500 border-gray-300"
@@ -457,40 +433,14 @@ export default function CartPage() {
                     // Create orders from selected cart items
                     const orders = await api.createOrderFromCart(selectedIds, paymentMethod === "khalti" ? "khalti" : paymentMethod)
                     
+                    console.log("Order placement response:", orders)
                     // Close modal and show success message
                     setShowCheckout(false)
                     
+                    // Handle payment based on method
                     if (paymentMethod === "khalti") {
-                      // For Khalti, we need to initiate the payment widget
-                      if (orders && orders.length > 0) {
-                        // Calculate total amount from all orders
-                        const totalAmount = orders.reduce((sum, order) => sum + order.totalAmount, 0);
-                        
-                        // Use the first order ID as reference (or combine them if needed)
-                        const orderId = orders[0].id;
-                        
-                        // Initiate Khalti payment
-                        initiateKhaltiPayment(totalAmount, orderId, (response) => {
-                          // This will be called after successful payment verification
-                          alert("Payment successful! Your order has been confirmed.");
-                          
-                          // Refresh cart after successful payment
-                          api.getCart().then(data => {
-                            setItems(data.map((row) => ({
-                              id: row.id,
-                              bookId: row.Book.id,
-                              title: row.Book.title,
-                              author: row.Book.author,
-                              price: parseFloat(row.Book.price),
-                              coverImage: row.Book.coverImage,
-                              quantity: row.quantity,
-                            })))
-                            setSelected(new Set())
-                          });
-                        });
-                      }
-                    } else if (paymentMethod === "online") {
-                      alert("Order placed successfully! Proceeding to online payment.")
+                      // Redirect to Khalti payment page
+                      window.location.href = orders.paymentUrl
                     } else {
                       alert("Order placed successfully! Cash on delivery selected.")
                     }
